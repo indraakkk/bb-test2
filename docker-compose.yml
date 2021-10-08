@@ -1,0 +1,54 @@
+version: "3.9"
+services:
+  bb-test2:
+    volumes:
+      - ./bb-test2:/var/www/html
+    container_name: "bb-test2"
+    image: "indraakkk/bb:test2"
+    # build:
+    #   context: ./bb-test2
+    #   dockerfile: Dockerfile
+    ports:
+      - "8004:8004"
+    depends_on:
+      - tech_test_db
+    networks:
+      - tech_test_network
+
+  # mockup-test1:
+  #   volumes:
+  #     - ./mockup-test1:/var/www/html
+  #   container_name: "mockup-test1"
+  #   build:
+  #     context: ./mockup-test1
+  #     dockerfile: Dockerfile
+  #   ports:
+  #     - "80:80"
+  #   depends_on:
+  #     - tech_test_db
+  #   networks:
+  #     - tech_test_network
+
+  tech_test_db:
+    container_name: "tech_test_db"
+    image: mysql:8.0.25
+    volumes:
+      - ./seeder:/docker-entrypoint-initdb.d
+    ports:
+      - "3308:3306"
+    expose:
+      - "3308"
+    command: --default-authentication-plugin=mysql_native_password
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_ROOT_HOST: "%"
+      MYSQL_DATABASE: boxbilling
+      MYSQL_USER: boxbilling
+      MYSQL_PASSWORD: boxbilling
+    networks:
+      - tech_test_network
+
+networks:
+  tech_test_network:
+    name: "development"
+    driver: bridge
